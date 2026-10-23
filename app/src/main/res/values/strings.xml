@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">NotchFlow Max</string>
+    <string name="accessibility_service_label">NotchFlow Max Touch Engine</string>
+    <string name="accessibility_service_description">Enables gesture interactions around your camera cutout notch to trigger system actions like taking screenshots, locking screen, media control, and showing Flow Capsule.</string>
+
+    <!-- Permissions -->
+    <string name="service_status_title">Service &amp; Permissions</string>
+    <string name="service_status_desc">Configure required permissions for gesture detection and system controls.</string>
+    <string name="master_switch_title">NotchFlow Service Active</string>
+    <string name="master_switch_desc">Master switch to enable or disable camera notch gestures.</string>
+    <string name="perm_overlay_title">Display Over Other Apps</string>
+    <string name="perm_overlay_desc">Required to create the touch-sensitive zone around your camera cutout.</string>
+    <string name="perm_accessibility_title">Accessibility Service</string>
+    <string name="perm_accessibility_desc">Required to perform actions like screenshots, lock screen, and notifications.</string>
+    <string name="perm_battery_title">Ignore Battery Optimization</string>
+    <string name="perm_battery_desc">Prevents Android from killing the background notch listener.</string>
+    <string name="grant_btn">Grant</string>
+    <string name="granted_label">Granted</string>
+
+    <!-- Notch Calibration -->
+    <string name="calibration_title">Notch Calibration</string>
+    <string name="calibration_desc">Align the touch detection area precisely with your device\'s camera cutout.</string>
+    <string name="preview_overlay_title">Preview Touch Zone</string>
+    <string name="preview_overlay_desc">Shows a glowing neon-green guide overlay during setup. Turns completely invisible when off.</string>
+    <string name="preset_title">Camera Cutout Presets</string>
+    <string name="preset_center">Center Punch Hole</string>
+    <string name="preset_left">Left Punch Hole</string>
+    <string name="preset_right">Right Punch Hole</string>
+    <string name="preset_pill">Dynamic Pill / Island</string>
+    <string name="preset_teardrop">Waterdrop Notch</string>
+    <string name="pos_x_label">Horizontal Offset (X)</string>
+    <string name="pos_y_label">Vertical Offset (Y)</string>
+    <string name="size_width_label">Cutout Width</string>
+    <string name="size_height_label">Cutout Height</string>
+    <string name="corner_radius_label">Corner Radius</string>
+    <string name="reset_defaults">Reset to Defaults</string>
+
+    <!-- Gestures & Actions -->
+    <string name="gestures_title">Gestures &amp; Actions</string>
+    <string name="gestures_desc">Map intuitive touch gestures around your notch to powerful shortcuts.</string>
+    <string name="gesture_single_tap">Single Tap</string>
+    <string name="gesture_double_tap">Double Tap</string>
+    <string name="gesture_long_press">Long Press</string>
+    <string name="gesture_swipe_left">Swipe Left</string>
+    <string name="gesture_swipe_right">Swipe Right</string>
+    <string name="gesture_swipe_down">Swipe Down</string>
+
+    <!-- Actions -->
+    <string name="action_none">None</string>
+    <string name="action_screenshot">Take Screenshot</string>
+    <string name="action_flashlight">Toggle Flashlight</string>
+    <string name="action_lock_screen">Lock Screen</string>
+    <string name="action_notifications">Pull Down Notifications</string>
+    <string name="action_quick_settings">Quick Settings</string>
+    <string name="action_power_menu">Open Power Menu</string>
+    <string name="action_media_play_pause">Media Play / Pause</string>
+    <string name="action_media_next">Media Next Track</string>
+    <string name="action_media_prev">Media Previous Track</string>
+    <string name="action_ringer_toggle">Toggle Ringer (Silent/Vibrate/Ring)</string>
+    <string name="action_flow_capsule">Flow Capsule (HUD Menu)</string>
+
+    <!-- Smart UX -->
+    <string name="smart_ux_title">Smart Behaviors</string>
+    <string name="haptic_feedback_title">Subtle Haptic Feedback</string>
+    <string name="haptic_feedback_desc">Vibrate gently upon detecting notch gestures.</string>
+    <string name="auto_pause_landscape_title">Auto-Pause in Landscape</string>
+    <string name="auto_pause_landscape_desc">Disables touch zone in full-screen games and videos to prevent accidental triggers.</string>
+
+    <!-- OTA Update -->
+    <string name="check_updates">Check for Updates</string>
+    <string name="update_available_title">Update Available!</string>
+    <string name="update_up_to_date">NotchFlow Max is up to date.</string>
+    <string name="update_download_install">Download &amp; Install</string>
+    <string name="update_later">Later</string>
+    <string name="update_downloading">Downloading update (%1$d%%)...</string>
+    <string name="update_installing">Preparing installer...</string>
+    <string name="update_failed">Failed to check updates</string>
+</resources>

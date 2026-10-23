@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">NotchFlow Max</string>
+    <string name="accessibility_service_label">محرك لمس NotchFlow Max</string>
+    <string name="accessibility_service_description">تفعيل التفاعل بالإيماءات حول فتحة الكاميرا لتنفيذ مهام النظام مثل التقاط الشاشة، قفل الهاتف، التحكم بالموسيقى، وشريط Flow Capsule.</string>
+
+    <!-- Permissions -->
+    <string name="service_status_title">حالة الخدمة والصلاحيات</string>
+    <string name="service_status_desc">إعداد الصلاحيات الأساسية لتشغيل إيماءات الكاميرا والتحكم في وظائف النظام.</string>
+    <string name="master_switch_title">خدمة NotchFlow نشطة</string>
+    <string name="master_switch_desc">المفتاح الرئيسي لتشغيل أو إيقاف إيماءات النوتش بالكامل.</string>
+    <string name="perm_overlay_title">الظهور فوق التطبيقات الأخرى</string>
+    <string name="perm_overlay_desc">مطلوبة لإنشاء منطقة استشعار اللمس حول فتحة الكاميرا.</string>
+    <string name="perm_accessibility_title">خدمة إمكانية الوصول (Accessibility)</string>
+    <string name="perm_accessibility_desc">مطلوبة لتنفيذ إجراءات النظام مثل التقاط الشاشة وقفل الهاتف وفتح الإشعارات.</string>
+    <string name="perm_battery_title">استثناء من تحسين البطارية</string>
+    <string name="perm_battery_desc">منع أندرويد من إيقاف الخدمة في الخلفية لضمان الاستجابة الدائمة.</string>
+    <string name="grant_btn">منح الإذن</string>
+    <string name="granted_label">مفعل</string>
+
+    <!-- Notch Calibration -->
+    <string name="calibration_title">معايرة أبعاد النوتش</string>
+    <string name="calibration_desc">اضبط منطقة اللمس لتتطابق بدقة هندسية مع فتحة كاميرا جهازك.</string>
+    <string name="preview_overlay_title">معاينة منطقة اللمس</string>
+    <string name="preview_overlay_desc">يُظهر طبقة خضراء نيون متوهجة أثناء الضبط. وتصبح شفافة 100% تماماً عند الإيقاف.</string>
+    <string name="preset_title">إعدادات سريعة للكاميرا</string>
+    <string name="preset_center">فتحة كاميرا وسطية</string>
+    <string name="preset_left">فتحة كاميرا يسارية</string>
+    <string name="preset_right">فتحة كاميرا يمينية</string>
+    <string name="preset_pill">الجزيرة التفاعلية (Pill / Island)</string>
+    <string name="preset_teardrop">نوتش قطرة الماء (Waterdrop)</string>
+    <string name="pos_x_label">الإزاحة الأفقية (X)</string>
+    <string name="pos_y_label">الإزاحة الرأسية (Y)</string>
+    <string name="size_width_label">العرض</string>
+    <string name="size_height_label">الارتفاع</string>
+    <string name="corner_radius_label">استدارة الحواف</string>
+    <string name="reset_defaults">استعادة الافتراضي</string>
+
+    <!-- Gestures & Actions -->
+    <string name="gestures_title">الإيماءات والإجراءات</string>
+    <string name="gestures_desc">خصص وظائف سريعة لأي إيماءة لمس حول فتحة الكاميرا.</string>
+    <string name="gesture_single_tap">نقرة واحدة (Single Tap)</string>
+    <string name="gesture_double_tap">نقرتان (Double Tap)</string>
+    <string name="gesture_long_press">ضغط مطول (Long Press)</string>
+    <string name="gesture_swipe_left">سحب لليسار (Swipe Left)</string>
+    <string name="gesture_swipe_right">سحب لليمين (Swipe Right)</string>
+    <string name="gesture_swipe_down">سحب لأسفل (Swipe Down)</string>
+
+    <!-- Actions -->
+    <string name="action_none">بدون إجراء</string>
+    <string name="action_screenshot">التقاط صورة للشاشة</string>
+    <string name="action_flashlight">تشغيل / إيقاف الكشاف</string>
+    <string name="action_lock_screen">قفل الشاشة فوراً</string>
+    <string name="action_notifications">سحب لوحة الإشعارات</string>
+    <string name="action_quick_settings">الإعدادات السريعة</string>
+    <string name="action_power_menu">قائمة إيقاف التشغيل</string>
+    <string name="action_media_play_pause">تشغيل / إيقاف الموسيقى</string>
+    <string name="action_media_next">المقطع التالي</string>
+    <string name="action_media_prev">المقطع السابق</string>
+    <string name="action_ringer_toggle">تبديل نمط الرنين (صامت/اهتزاز/عام)</string>
+    <string name="action_flow_capsule">كبسولة Flow Capsule (لوحة تحكم مصغرة)</string>
+
+    <!-- Smart UX -->
+    <string name="smart_ux_title">الميزات الذكية</string>
+    <string name="haptic_feedback_title">اهتزاز لمسي هادئ (Haptic Feedback)</string>
+    <string name="haptic_feedback_desc">اهتزاز خفيف جداً يؤكد التعرف على الإيماءة بنجاح.</string>
+    <string name="auto_pause_landscape_title">الإيقاف التلقائي في الوضع الأفقي</string>
+    <string name="auto_pause_landscape_desc">تعطيل منطقة اللمس أثناء الألعاب والفيديوهات بملء الشاشة لتجنب اللمسات العرضية.</string>
+
+    <!-- OTA Update -->
+    <string name="check_updates">التحقق من التحديثات</string>
+    <string name="update_available_title">تحديث جديد متوفر!</string>
+    <string name="update_up_to_date">التطبيق محدّث إلى آخر إصدار.</string>
+    <string name="update_download_install">تحميل وتثبيت</string>
+    <string name="update_later">لاحقاً</string>
+    <string name="update_downloading">جاري تحميل التحديث (%1$d%%)...</string>
+    <string name="update_installing">جاري تجهيز التثبيت...</string>
+    <string name="update_failed">تعذر التحقق من التحديثات</string>
+</resources>
