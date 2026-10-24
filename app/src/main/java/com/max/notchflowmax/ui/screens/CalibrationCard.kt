@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.max.notchflowmax.R
@@ -37,10 +36,8 @@ import com.max.notchflowmax.data.NotchConfig
 import com.max.notchflowmax.ui.components.GlowCard
 import com.max.notchflowmax.ui.components.SliderWithLabel
 import com.max.notchflowmax.ui.theme.BackgroundDark
-import com.max.notchflowmax.ui.theme.CardBorder
-import com.max.notchflowmax.ui.theme.NeonGreen
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
 import com.max.notchflowmax.ui.theme.TextSecondary
@@ -70,7 +67,7 @@ fun CalibrationCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = if (config.previewActive) NeonGreen.copy(alpha = 0.12f) else SurfaceVariantDark.copy(alpha = 0.5f),
+                        color = if (config.previewActive) ElectricBlue.copy(alpha = 0.15f) else SurfaceVariantDark.copy(alpha = 0.5f),
                         shape = RoundedCornerShape(14.dp)
                     )
                     .padding(12.dp),
@@ -78,9 +75,9 @@ fun CalibrationCard(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(38.dp)
                         .background(
-                            color = if (config.previewActive) NeonGreen.copy(alpha = 0.2f) else TextTertiary.copy(alpha = 0.15f),
+                            color = if (config.previewActive) ElectricBlue.copy(alpha = 0.25f) else TextTertiary.copy(alpha = 0.15f),
                             shape = RoundedCornerShape(10.dp)
                         ),
                     contentAlignment = Alignment.Center
@@ -88,8 +85,8 @@ fun CalibrationCard(
                     Icon(
                         imageVector = Icons.Default.Visibility,
                         contentDescription = null,
-                        tint = if (config.previewActive) NeonGreen else TextSecondary,
-                        modifier = Modifier.size(18.dp)
+                        tint = if (config.previewActive) ElectricBlue else TextSecondary,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
@@ -99,7 +96,7 @@ fun CalibrationCard(
                     Text(
                         text = stringResource(id = R.string.preview_overlay_title),
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (config.previewActive) NeonGreen else TextPrimary
+                        color = if (config.previewActive) ElectricBlue else TextPrimary
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
@@ -116,7 +113,7 @@ fun CalibrationCard(
                     onCheckedChange = onPreviewToggle,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = BackgroundDark,
-                        checkedTrackColor = NeonGreen,
+                        checkedTrackColor = ElectricBlue,
                         uncheckedThumbColor = TextTertiary,
                         uncheckedTrackColor = SurfaceVariantDark
                     )
@@ -139,11 +136,11 @@ fun CalibrationCard(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                PresetChip("Center Hole") { onApplyPreset(0, 4, 80, 80, 40) }
-                PresetChip("Left Hole") { onApplyPreset(-140, 4, 80, 80, 40) }
-                PresetChip("Right Hole") { onApplyPreset(140, 4, 80, 80, 40) }
-                PresetChip("Dynamic Pill") { onApplyPreset(0, 4, 150, 60, 30) }
-                PresetChip("Waterdrop") { onApplyPreset(0, 0, 95, 75, 20) }
+                PresetChip(stringResource(id = R.string.preset_center)) { onApplyPreset(0, 0, 90, 90, 45) }
+                PresetChip(stringResource(id = R.string.preset_left)) { onApplyPreset(-140, 0, 90, 90, 45) }
+                PresetChip(stringResource(id = R.string.preset_right)) { onApplyPreset(140, 0, 90, 90, 45) }
+                PresetChip(stringResource(id = R.string.preset_pill)) { onApplyPreset(0, 0, 160, 65, 32) }
+                PresetChip(stringResource(id = R.string.preset_teardrop)) { onApplyPreset(0, 0, 100, 80, 20) }
             }
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -216,12 +213,12 @@ private fun PresetChip(label: String, onClick: () -> Unit) {
         modifier = Modifier
             .background(SurfaceVariantDark, RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 12.dp, vertical = 7.dp)
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = SecondaryCyan
+            color = ElectricBlue
         )
     }
 }

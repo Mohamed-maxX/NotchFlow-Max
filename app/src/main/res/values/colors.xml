@@ -1,12 +1,13 @@
 <resources>
     <color name="bg_dark">#0A0E17</color>
-    <color name="surface_dark">#131B2A</color>
-    <color name="surface_variant_dark">#1C263B</color>
-    <color name="primary_neon">#00F5A0</color>
-    <color name="secondary_cyan">#00D9F5</color>
-    <color name="accent_violet">#7928CA</color>
+    <color name="surface_dark">#111827</color>
+    <color name="surface_variant_dark">#1E293B</color>
+    <color name="primary_blue">#2979FF</color>
+    <color name="electric_blue">#00B0FF</color>
+    <color name="royal_cyan">#00E5FF</color>
     <color name="text_primary">#F8FAFC</color>
     <color name="text_secondary">#94A3B8</color>
     <color name="border_glow">#1E293B</color>
-    <color name="preview_neon_green">#00FF66</color>
+    <color name="preview_blue_border">#FF2979FF</color>
+    <color name="preview_blue_fill">#8000B0FF</color>
 </resources>

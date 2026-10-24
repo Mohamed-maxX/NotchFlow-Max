@@ -14,12 +14,9 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import com.max.notchflowmax.R
 import com.max.notchflowmax.data.GestureAction
 import com.max.notchflowmax.util.HapticHelper
 
@@ -47,7 +44,9 @@ class FlowCapsuleOverlay(
         val topMarginPx = ((notchY + notchHeight + 10) * density).toInt()
 
         val layoutParams = WindowManager.LayoutParams().apply {
-            type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            type = if (NotchFlowAccessibilityService.isRunning) {
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             } else {
                 @Suppress("DEPRECATION")
@@ -55,9 +54,15 @@ class FlowCapsuleOverlay(
             }
             flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            }
+
             format = PixelFormat.TRANSLUCENT
-            width = (320 * density).toInt()
+            width = (330 * density).toInt()
             height = WindowManager.LayoutParams.WRAP_CONTENT
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             y = topMarginPx
@@ -111,11 +116,11 @@ class FlowCapsuleOverlay(
             orientation = LinearLayout.VERTICAL
             setPadding(pad16, pad12, pad16, pad16)
 
-            // Neon capsule dark glass background
+            // Electric Blue capsule dark glass background
             background = GradientDrawable().apply {
-                setColor(Color.parseColor("#E60F172A")) // Translucent obsidian
+                setColor(Color.parseColor("#EE0A0E17")) // Deep dark translucent
                 cornerRadius = 24 * density
-                setStroke((1.5f * density).toInt(), Color.parseColor("#00F5A0")) // Glowing neon border
+                setStroke((1.8f * density).toInt(), Color.parseColor("#2979FF")) // Glowing Electric Blue border
             }
 
             // Header row
@@ -126,7 +131,7 @@ class FlowCapsuleOverlay(
                 val dot = View(context).apply {
                     background = GradientDrawable().apply {
                         shape = GradientDrawable.OVAL
-                        setColor(Color.parseColor("#00F5A0"))
+                        setColor(Color.parseColor("#00B0FF"))
                     }
                     layoutParams = LinearLayout.LayoutParams((8 * density).toInt(), (8 * density).toInt()).apply {
                         marginEnd = pad8
@@ -146,7 +151,7 @@ class FlowCapsuleOverlay(
                 val closeBtn = TextView(context).apply {
                     text = "✕"
                     setTextColor(Color.parseColor("#94A3B8"))
-                    textSize = 14f
+                    textSize = 15f
                     setPadding(pad8, 0, pad8, 0)
                     setOnClickListener { dismiss() }
                 }

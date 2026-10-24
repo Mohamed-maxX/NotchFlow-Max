@@ -34,8 +34,8 @@ import com.max.notchflowmax.ui.components.ActionSelectorDropdown
 import com.max.notchflowmax.ui.components.GlowCard
 import com.max.notchflowmax.ui.theme.BackgroundDark
 import com.max.notchflowmax.ui.theme.CardBorder
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
 import com.max.notchflowmax.ui.theme.TextSecondary
@@ -120,9 +120,9 @@ private fun SmartToggleRow(
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(38.dp)
                 .background(
-                    color = if (checked) PrimaryNeon.copy(alpha = 0.15f) else TextTertiary.copy(alpha = 0.15f),
+                    color = if (checked) PrimaryBlue.copy(alpha = 0.18f) else TextTertiary.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(10.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -130,8 +130,8 @@ private fun SmartToggleRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (checked) PrimaryNeon else TextSecondary,
-                modifier = Modifier.size(18.dp)
+                tint = if (checked) ElectricBlue else TextSecondary,
+                modifier = Modifier.size(20.dp)
             )
         }
 
@@ -158,7 +158,7 @@ private fun SmartToggleRow(
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = BackgroundDark,
-                checkedTrackColor = PrimaryNeon,
+                checkedTrackColor = PrimaryBlue,
                 uncheckedThumbColor = TextTertiary,
                 uncheckedTrackColor = SurfaceVariantDark
             )

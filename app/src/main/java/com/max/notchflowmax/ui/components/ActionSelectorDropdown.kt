@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import com.max.notchflowmax.data.GestureAction
 import com.max.notchflowmax.data.GestureType
 import com.max.notchflowmax.ui.theme.CardBorder
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceDark
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
@@ -63,7 +63,7 @@ fun ActionSelectorDropdown(
                 Icon(
                     imageVector = Icons.Default.TouchApp,
                     contentDescription = null,
-                    tint = SecondaryCyan,
+                    tint = ElectricBlue,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -96,7 +96,7 @@ fun ActionSelectorDropdown(
                 Text(
                     text = stringResource(id = selectedAction.titleRes),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (selectedAction == GestureAction.NONE) TextSecondary else PrimaryNeon
+                    color = if (selectedAction == GestureAction.NONE) TextSecondary else ElectricBlue
                 )
 
                 Icon(
@@ -120,7 +120,7 @@ fun ActionSelectorDropdown(
                             Text(
                                 text = stringResource(id = action.titleRes),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = if (isSelected) PrimaryNeon else TextPrimary
+                                color = if (isSelected) ElectricBlue else TextPrimary
                             )
                         },
                         onClick = {

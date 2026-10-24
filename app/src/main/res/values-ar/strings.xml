@@ -21,7 +21,7 @@
     <string name="calibration_title">معايرة أبعاد النوتش</string>
     <string name="calibration_desc">اضبط منطقة اللمس لتتطابق بدقة هندسية مع فتحة كاميرا جهازك.</string>
     <string name="preview_overlay_title">معاينة منطقة اللمس</string>
-    <string name="preview_overlay_desc">يُظهر طبقة خضراء نيون متوهجة أثناء الضبط. وتصبح شفافة 100% تماماً عند الإيقاف.</string>
+    <string name="preview_overlay_desc">يُظهر طبقة زرقاء متوهجة أثناء الضبط، وتصبح شفافة 100% تماماً عند الإيقاف.</string>
     <string name="preset_title">إعدادات سريعة للكاميرا</string>
     <string name="preset_center">فتحة كاميرا وسطية</string>
     <string name="preset_left">فتحة كاميرا يسارية</string>

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.max.notchflowmax.R
@@ -35,8 +33,8 @@ import com.max.notchflowmax.update.UpdateInfo
 import com.max.notchflowmax.update.UpdateStatus
 import com.max.notchflowmax.ui.theme.BackgroundDark
 import com.max.notchflowmax.ui.theme.CardBorder
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceDark
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
@@ -57,7 +55,7 @@ fun UpdateDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
-                            color = PrimaryNeon,
+                            color = ElectricBlue,
                             strokeWidth = 2.dp
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -100,8 +98,8 @@ fun UpdateDialog(
                     Button(
                         onClick = onDismiss,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryNeon,
-                            contentColor = BackgroundDark
+                            containerColor = PrimaryBlue,
+                            contentColor = TextPrimary
                         )
                     ) {
                         Text("OK")
@@ -118,15 +116,15 @@ fun UpdateDialog(
                 icon = {
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
-                            .background(PrimaryNeon.copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
+                            .size(52.dp)
+                            .background(PrimaryBlue.copy(alpha = 0.18f), RoundedCornerShape(14.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.CloudDownload,
                             contentDescription = null,
-                            tint = PrimaryNeon,
-                            modifier = Modifier.size(24.dp)
+                            tint = ElectricBlue,
+                            modifier = Modifier.size(26.dp)
                         )
                     }
                 },
@@ -140,13 +138,13 @@ fun UpdateDialog(
                         Spacer(modifier = Modifier.height(4.dp))
                         Box(
                             modifier = Modifier
-                                .background(SecondaryCyan.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .background(ElectricBlue.copy(alpha = 0.18f), RoundedCornerShape(6.dp))
+                                .padding(horizontal = 10.dp, vertical = 3.dp)
                         ) {
                             Text(
                                 text = "v${info.versionName} (Build ${info.versionCode})",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = SecondaryCyan
+                                color = ElectricBlue
                             )
                         }
                     }
@@ -175,8 +173,8 @@ fun UpdateDialog(
                     Button(
                         onClick = { onDownloadInstall(info) },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryNeon,
-                            contentColor = BackgroundDark
+                            containerColor = PrimaryBlue,
+                            contentColor = TextPrimary
                         )
                     ) {
                         Text(stringResource(id = R.string.update_download_install))
@@ -213,14 +211,14 @@ fun UpdateDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp),
-                            color = PrimaryNeon,
+                            color = ElectricBlue,
                             trackColor = SurfaceVariantDark
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "$progress%",
                             style = MaterialTheme.typography.labelSmall,
-                            color = SecondaryCyan
+                            color = ElectricBlue
                         )
                     }
                 },
@@ -249,8 +247,8 @@ fun UpdateDialog(
                     Button(
                         onClick = onDismiss,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryNeon,
-                            contentColor = BackgroundDark
+                            containerColor = PrimaryBlue,
+                            contentColor = TextPrimary
                         )
                     ) {
                         Text("OK")

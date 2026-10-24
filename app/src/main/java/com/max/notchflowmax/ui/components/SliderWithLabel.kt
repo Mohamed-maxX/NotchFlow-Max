@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,9 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.max.notchflowmax.ui.theme.BackgroundDark
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
 import com.max.notchflowmax.ui.theme.TextSecondary
@@ -60,7 +58,7 @@ fun SliderWithLabel(
             Box(
                 modifier = Modifier
                     .background(
-                        color = SurfaceVariantDark,
+                        color = PrimaryBlue.copy(alpha = 0.15f),
                         shape = RoundedCornerShape(6.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 2.dp)
@@ -68,7 +66,7 @@ fun SliderWithLabel(
                 Text(
                     text = "$value $unit",
                     style = MaterialTheme.typography.labelSmall,
-                    color = PrimaryNeon
+                    color = ElectricBlue
                 )
             }
         }
@@ -104,8 +102,8 @@ fun SliderWithLabel(
                     .weight(1f)
                     .padding(horizontal = 8.dp),
                 colors = SliderDefaults.colors(
-                    thumbColor = PrimaryNeon,
-                    activeTrackColor = PrimaryNeon,
+                    thumbColor = ElectricBlue,
+                    activeTrackColor = PrimaryBlue,
                     inactiveTrackColor = SurfaceVariantDark
                 )
             )

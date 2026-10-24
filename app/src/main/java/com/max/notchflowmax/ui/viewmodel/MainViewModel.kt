@@ -7,6 +7,8 @@ import com.max.notchflowmax.data.GestureAction
 import com.max.notchflowmax.data.GestureType
 import com.max.notchflowmax.data.NotchConfig
 import com.max.notchflowmax.data.PreferencesRepository
+import com.max.notchflowmax.service.NotchFlowAccessibilityService
+import com.max.notchflowmax.service.NotchOverlayManager
 import com.max.notchflowmax.service.NotchOverlayService
 import com.max.notchflowmax.update.UpdateInfo
 import com.max.notchflowmax.update.UpdateManager
@@ -30,7 +32,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         observeConfig()
         observeUpdateStatus()
         refreshPermissions()
-        // Check for updates automatically on app startup as requested
         checkForUpdates(manual = false)
     }
 
@@ -38,6 +39,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             preferencesRepo.configFlow.collectLatest { config ->
                 _uiState.update { it.copy(config = config, isReady = true) }
+                NotchOverlayManager.setInitialConfig(config)
                 syncOverlayService(config)
             }
         }
@@ -69,62 +71,107 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun syncOverlayService(config: NotchConfig) {
         val context = getApplication<Application>()
-        if (config.serviceEnabled && PermissionHelper.hasOverlayPermission(context)) {
+        val canRun = config.serviceEnabled && (PermissionHelper.hasOverlayPermission(context) || NotchFlowAccessibilityService.isRunning)
+
+        if (canRun) {
             NotchOverlayService.start(context)
         } else {
             NotchOverlayService.stop(context)
+            NotchOverlayManager.detach()
         }
     }
 
     fun setServiceEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            preferencesRepo.setServiceEnabled(enabled)
-        }
+        val updated = _uiState.value.config.copy(serviceEnabled = enabled)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
+        syncOverlayService(updated)
+        viewModelScope.launch { preferencesRepo.setServiceEnabled(enabled) }
     }
 
     fun setPreviewActive(active: Boolean) {
-        viewModelScope.launch {
-            preferencesRepo.setPreviewActive(active)
-        }
+        val updated = _uiState.value.config.copy(previewActive = active)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
+        viewModelScope.launch { preferencesRepo.setPreviewActive(active) }
     }
 
     fun updatePosX(x: Int) {
+        val updated = _uiState.value.config.copy(posX = x)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.updatePosX(x) }
     }
 
     fun updatePosY(y: Int) {
+        val updated = _uiState.value.config.copy(posY = y)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.updatePosY(y) }
     }
 
     fun updateWidth(w: Int) {
+        val updated = _uiState.value.config.copy(width = w)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.updateWidth(w) }
     }
 
     fun updateHeight(h: Int) {
+        val updated = _uiState.value.config.copy(height = h)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.updateHeight(h) }
     }
 
     fun updateCornerRadius(r: Int) {
+        val updated = _uiState.value.config.copy(cornerRadius = r)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.updateCornerRadius(r) }
     }
 
     fun applyPreset(x: Int, y: Int, w: Int, h: Int, radius: Int) {
+        val updated = _uiState.value.config.copy(
+            posX = x,
+            posY = y,
+            width = w,
+            height = h,
+            cornerRadius = radius
+        )
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.applyPreset(x, y, w, h, radius) }
     }
 
     fun resetToDefaults() {
+        val defaultGestures = NotchConfig.defaultGestures()
+        val updated = NotchConfig(gestures = defaultGestures)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.resetToDefaults() }
     }
 
     fun updateGesture(gesture: GestureType, action: GestureAction) {
+        val newGestures = _uiState.value.config.gestures.toMutableMap()
+        newGestures[gesture] = action
+        val updated = _uiState.value.config.copy(gestures = newGestures)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.updateGestureAction(gesture, action) }
     }
 
     fun setHapticFeedback(enabled: Boolean) {
+        val updated = _uiState.value.config.copy(hapticFeedback = enabled)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.setHapticFeedback(enabled) }
     }
 
     fun setAutoPauseLandscape(enabled: Boolean) {
+        val updated = _uiState.value.config.copy(autoPauseLandscape = enabled)
+        _uiState.update { it.copy(config = updated) }
+        NotchOverlayManager.updateConfigLive(updated)
         viewModelScope.launch { preferencesRepo.setAutoPauseLandscape(enabled) }
     }
 

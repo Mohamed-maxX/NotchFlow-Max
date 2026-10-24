@@ -21,7 +21,7 @@
     <string name="calibration_title">Notch Calibration</string>
     <string name="calibration_desc">Align the touch detection area precisely with your device\'s camera cutout.</string>
     <string name="preview_overlay_title">Preview Touch Zone</string>
-    <string name="preview_overlay_desc">Shows a glowing neon-green guide overlay during setup. Turns completely invisible when off.</string>
+    <string name="preview_overlay_desc">Shows a glowing electric blue overlay during setup. Turns completely invisible when off.</string>
     <string name="preset_title">Camera Cutout Presets</string>
     <string name="preset_center">Center Punch Hole</string>
     <string name="preset_left">Left Punch Hole</string>

@@ -37,9 +37,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.max.notchflowmax.R
 import com.max.notchflowmax.ui.theme.BackgroundDark
 import com.max.notchflowmax.ui.theme.CardBorder
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
-import com.max.notchflowmax.ui.theme.SuccessGreen
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceDark
 import com.max.notchflowmax.ui.theme.TextPrimary
 import com.max.notchflowmax.ui.theme.TextSecondary
@@ -67,7 +66,7 @@ fun DashboardScreen(
                             modifier = Modifier
                                 .size(10.dp)
                                 .clip(CircleShape)
-                                .background(if (uiState.config.serviceEnabled && uiState.hasOverlayPermission) PrimaryNeon else TextSecondary)
+                                .background(if (uiState.config.serviceEnabled && (uiState.hasAccessibilityPermission || uiState.hasOverlayPermission)) ElectricBlue else TextSecondary)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
@@ -82,14 +81,14 @@ fun DashboardScreen(
                         onClick = { viewModel.checkForUpdates(manual = true) },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = SecondaryCyan
+                            contentColor = ElectricBlue
                         ),
                         modifier = Modifier.padding(end = 12.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.CloudSync,
                             contentDescription = "Check for Updates",
-                            tint = SecondaryCyan,
+                            tint = ElectricBlue,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))

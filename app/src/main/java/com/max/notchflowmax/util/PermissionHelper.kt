@@ -1,14 +1,14 @@
 package com.max.notchflowmax.util
 
-import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.accessibility.AccessibilityManager
 import com.max.notchflowmax.service.NotchFlowAccessibilityService
 
 object PermissionHelper {
@@ -24,18 +24,44 @@ object PermissionHelper {
         ).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (_: Exception) {
+            val fallback = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(fallback)
+        }
     }
 
     fun isAccessibilityServiceEnabled(context: Context): Boolean {
-        val expectedComponentName = ComponentName(context, NotchFlowAccessibilityService::class.java).flattenToString()
-        val enabledServices = Settings.Secure.getString(
+        if (NotchFlowAccessibilityService.isRunning) return true
+
+        val expectedComponent = ComponentName(context, NotchFlowAccessibilityService::class.java)
+        val expectedFull = expectedComponent.flattenToString()
+        val expectedShort = expectedComponent.flattenToShortString()
+
+        // 1. AccessibilityManager
+        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
+        if (am != null) {
+            val enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+            if (enabledServices.any {
+                val serviceInfo = it.resolveInfo.serviceInfo
+                serviceInfo.packageName == context.packageName &&
+                serviceInfo.name == NotchFlowAccessibilityService::class.java.name
+            }) {
+                return true
+            }
+        }
+
+        // 2. Settings.Secure
+        val enabledSettings = Settings.Secure.getString(
             context.contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ) ?: return false
 
-        return enabledServices.split(':').any {
-            it.equals(expectedComponentName, ignoreCase = true)
+        return enabledSettings.split(':').any {
+            it.equals(expectedFull, ignoreCase = true) || it.equals(expectedShort, ignoreCase = true)
         }
     }
 

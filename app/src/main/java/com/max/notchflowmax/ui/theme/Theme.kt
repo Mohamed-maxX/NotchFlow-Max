@@ -10,11 +10,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryNeon,
+    primary = PrimaryBlue,
     onPrimary = BackgroundDark,
-    secondary = SecondaryCyan,
+    secondary = ElectricBlue,
     onSecondary = BackgroundDark,
-    tertiary = AccentViolet,
+    tertiary = RoyalCyan,
     background = BackgroundDark,
     onBackground = TextPrimary,
     surface = SurfaceDark,
@@ -35,7 +35,9 @@ fun NotchFlowTheme(
         SideEffect {
             val window = (view.context as? Activity)?.window
             if (window != null) {
+                @Suppress("DEPRECATION")
                 window.statusBarColor = BackgroundDark.toArgb()
+                @Suppress("DEPRECATION")
                 window.navigationBarColor = BackgroundDark.toArgb()
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
                 WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false

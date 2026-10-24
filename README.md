@@ -1,7 +1,7 @@
 # 🌊 NotchFlow Max
 
 <p align="center">
-  <img src="art/app_icon.png" width="160" height="160" alt="NotchFlow Max Icon" style="border-radius: 36px; box-shadow: 0 8px 32px rgba(0, 245, 160, 0.3);" />
+  <img src="art/app_icon.png" width="160" height="160" alt="NotchFlow Max Icon" style="border-radius: 36px; box-shadow: 0 8px 32px rgba(41, 121, 255, 0.4);" />
 </p>
 
 <p align="center">
@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Mohamed-maxX/NotchFlow-Max/releases"><img src="https://img.shields.io/badge/Release-v1.0.0-00F5A0?style=for-the-badge&logo=android" alt="Release v1.0.0" /></a>
-  <a href="https://developer.android.com/jetpack/compose"><img src="https://img.shields.io/badge/Jetpack_Compose-Material_3-00D9F5?style=for-the-badge&logo=jetpackcompose" alt="Jetpack Compose Material 3" /></a>
+  <a href="https://github.com/Mohamed-maxX/NotchFlow-Max/releases"><img src="https://img.shields.io/badge/Release-v1.1.0-2979FF?style=for-the-badge&logo=android" alt="Release v1.1.0" /></a>
+  <a href="https://developer.android.com/jetpack/compose"><img src="https://img.shields.io/badge/Jetpack_Compose-Material_3-00B0FF?style=for-the-badge&logo=jetpackcompose" alt="Jetpack Compose Material 3" /></a>
   <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.0.20-7928CA?style=for-the-badge&logo=kotlin" alt="Kotlin" /></a>
-  <a href="https://raw.githubusercontent.com/Mohamed-maxX/NotchFlow-Max/main/version.json"><img src="https://img.shields.io/badge/OTA_Updates-Automated-10B981?style=for-the-badge&logo=github" alt="Direct OTA Updates" /></a>
+  <a href="https://raw.githubusercontent.com/Mohamed-maxX/NotchFlow-Max/main/version.json"><img src="https://img.shields.io/badge/OTA_Updates-Automated-2979FF?style=for-the-badge&logo=github" alt="Direct OTA Updates" /></a>
 </p>
 
 ---
@@ -36,7 +36,7 @@ The application features a minimalist, cyber-neon dark dashboard with three cohe
 2. **Notch Calibration Card:**
    - Sliders for **X Position** (-180dp to +180dp), **Y Position** (0dp to 100dp), **Width** (30dp to 250dp), **Height** (30dp to 140dp), and **Corner Radius** (0dp to 60dp).
    - 1-Tap Quick Presets: *Center Punch Hole*, *Left Punch Hole*, *Right Punch Hole*, *Dynamic Pill*, and *Waterdrop*.
-   - **Preview Overlay Switch:** Illuminates the touch detection zone in neon-green (`#00FF66`) with a subtle glow for effortless alignment. When toggled OFF, it turns **100% transparent and invisible** for everyday use.
+   - **Preview Overlay Switch:** Illuminates the touch detection zone in vibrant electric blue (`#8000B0FF` with `#FF2979FF` border) with a subtle glow for effortless alignment. When toggled OFF, it turns **100% transparent and invisible** for everyday use.
 3. **Gestures & Actions Card:**
    - Assign actions to 6 distinct gestures:
      - 👆 **Single Tap**

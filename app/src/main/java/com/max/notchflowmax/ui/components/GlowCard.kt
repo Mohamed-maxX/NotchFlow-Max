@@ -25,12 +25,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.max.notchflowmax.ui.theme.CardBorder
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceDark
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
@@ -46,7 +45,7 @@ fun GlowCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val borderColor by animateColorAsState(
-        targetValue = if (isHighlighted) PrimaryNeon.copy(alpha = 0.6f) else CardBorder,
+        targetValue = if (isHighlighted) PrimaryBlue.copy(alpha = 0.7f) else CardBorder,
         animationSpec = tween(400),
         label = "cardBorderColor"
     )
@@ -83,7 +82,7 @@ fun GlowCard(
                         modifier = Modifier
                             .size(38.dp)
                             .background(
-                                color = PrimaryNeon.copy(alpha = 0.12f),
+                                color = PrimaryBlue.copy(alpha = 0.15f),
                                 shape = RoundedCornerShape(10.dp)
                             ),
                         contentAlignment = Alignment.Center
@@ -91,7 +90,7 @@ fun GlowCard(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = PrimaryNeon,
+                            tint = ElectricBlue,
                             modifier = Modifier.size(20.dp)
                         )
                     }

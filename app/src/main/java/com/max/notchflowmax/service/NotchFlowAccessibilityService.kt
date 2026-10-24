@@ -15,13 +15,25 @@ class NotchFlowAccessibilityService : AccessibilityService() {
             get() = instance != null
     }
 
+    private var orientationWatcher: OrientationWatcher? = null
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+
+        // Attach overlay directly inside AccessibilityService using TYPE_ACCESSIBILITY_OVERLAY
+        // This allows the overlay to draw directly over the camera notch cutout and top status bar!
+        NotchOverlayManager.attach(this, isAccessibility = true)
+
+        orientationWatcher = OrientationWatcher(this) { isLandscape ->
+            val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
+            NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
+        }
+        orientationWatcher?.start()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Accessibility events handled if needed for window tracking
+        // Window tracking if needed
     }
 
     override fun onInterrupt() {
@@ -30,6 +42,9 @@ class NotchFlowAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        orientationWatcher?.stop()
+        orientationWatcher = null
+        NotchOverlayManager.detach(this)
         if (instance == this) {
             instance = null
         }

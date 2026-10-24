@@ -1,6 +1,7 @@
 package com.max.notchflowmax.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -23,13 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.max.notchflowmax.R
 import com.max.notchflowmax.ui.theme.BackgroundDark
-import com.max.notchflowmax.ui.theme.PrimaryNeon
-import com.max.notchflowmax.ui.theme.SecondaryCyan
-import com.max.notchflowmax.ui.theme.SuccessGreen
+import com.max.notchflowmax.ui.theme.ElectricBlue
+import com.max.notchflowmax.ui.theme.PrimaryBlue
 import com.max.notchflowmax.ui.theme.SurfaceVariantDark
 import com.max.notchflowmax.ui.theme.TextPrimary
 import com.max.notchflowmax.ui.theme.TextSecondary
@@ -46,22 +49,40 @@ fun PermissionToggleRow(
     switchChecked: Boolean = false,
     onSwitchChanged: ((Boolean) -> Unit)? = null
 ) {
-    Row(
-        modifier = Modifier
+    val rowModifier = if (showSwitch && onSwitchChanged != null) {
+        Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .background(
-                color = SurfaceVariantDark.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(14.dp)
-            )
-            .padding(12.dp),
+            .clip(RoundedCornerShape(14.dp))
+            .background(SurfaceVariantDark.copy(alpha = 0.5f))
+            .clickable { onSwitchChanged(!switchChecked) }
+            .padding(12.dp)
+    } else if (!isGranted) {
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(SurfaceVariantDark.copy(alpha = 0.5f))
+            .clickable { onGrantClick() }
+            .padding(12.dp)
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(SurfaceVariantDark.copy(alpha = 0.5f))
+            .padding(12.dp)
+    }
+
+    Row(
+        modifier = rowModifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(38.dp)
                 .background(
-                    color = if (isGranted) SuccessGreen.copy(alpha = 0.15f) else TextTertiary.copy(alpha = 0.15f),
+                    color = if (isGranted) ElectricBlue.copy(alpha = 0.15f) else TextTertiary.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(10.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -69,8 +90,8 @@ fun PermissionToggleRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isGranted) SuccessGreen else TextSecondary,
-                modifier = Modifier.size(18.dp)
+                tint = if (isGranted) ElectricBlue else TextSecondary,
+                modifier = Modifier.size(20.dp)
             )
         }
 
@@ -100,7 +121,7 @@ fun PermissionToggleRow(
                 onCheckedChange = onSwitchChanged,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = BackgroundDark,
-                    checkedTrackColor = PrimaryNeon,
+                    checkedTrackColor = PrimaryBlue,
                     uncheckedThumbColor = TextTertiary,
                     uncheckedTrackColor = SurfaceVariantDark
                 )
@@ -111,22 +132,22 @@ fun PermissionToggleRow(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .background(
-                            color = SuccessGreen.copy(alpha = 0.15f),
+                            color = PrimaryBlue.copy(alpha = 0.18f),
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
-                        tint = SuccessGreen,
-                        modifier = Modifier.size(14.dp)
+                        tint = ElectricBlue,
+                        modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Active",
+                        text = stringResource(id = R.string.granted_label),
                         style = MaterialTheme.typography.labelSmall,
-                        color = SuccessGreen
+                        color = ElectricBlue
                     )
                 }
             } else {
@@ -134,17 +155,23 @@ fun PermissionToggleRow(
                     onClick = onGrantClick,
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryNeon,
-                        contentColor = BackgroundDark
+                        containerColor = PrimaryBlue,
+                        contentColor = TextPrimary
                     ),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                        horizontal = 12.dp,
+                        horizontal = 14.dp,
                         vertical = 6.dp
                     )
                 ) {
                     Text(
-                        text = "Grant",
+                        text = stringResource(id = R.string.grant_btn),
                         style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }
