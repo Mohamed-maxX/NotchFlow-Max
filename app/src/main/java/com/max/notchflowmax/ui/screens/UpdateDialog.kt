@@ -47,66 +47,6 @@ fun UpdateDialog(
     onDownloadInstall: (UpdateInfo) -> Unit
 ) {
     when (status) {
-        is UpdateStatus.Checking -> {
-            AlertDialog(
-                onDismissRequest = onDismiss,
-                containerColor = SurfaceDark,
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            color = ElectricBlue,
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = stringResource(id = R.string.check_updates),
-                            color = TextPrimary,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                },
-                text = {
-                    Text(
-                        text = "Checking for new releases on GitHub...",
-                        color = TextSecondary,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                confirmButton = {}
-            )
-        }
-        is UpdateStatus.UpToDate -> {
-            AlertDialog(
-                onDismissRequest = onDismiss,
-                containerColor = SurfaceDark,
-                title = {
-                    Text(
-                        text = "Up to Date",
-                        color = TextPrimary,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(id = R.string.update_up_to_date),
-                        color = TextSecondary,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = onDismiss,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryBlue,
-                            contentColor = TextPrimary
-                        )
-                    ) {
-                        Text("OK")
-                    }
-                }
-            )
-        }
         is UpdateStatus.UpdateAvailable -> {
             val info = status.info
             AlertDialog(

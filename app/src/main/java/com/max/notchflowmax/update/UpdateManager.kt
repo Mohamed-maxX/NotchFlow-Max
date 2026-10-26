@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.max.notchflowmax.BuildConfig
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +29,7 @@ class UpdateManager(private val context: Context) {
     private val _status = MutableStateFlow<UpdateStatus>(UpdateStatus.Idle)
     val status: StateFlow<UpdateStatus> = _status.asStateFlow()
 
-    suspend fun checkForUpdates(manual: Boolean = false) {
-        _status.value = UpdateStatus.Checking
+    suspend fun checkForUpdates(isManualCheck: Boolean = false) {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(VERSION_URL)
@@ -37,7 +37,10 @@ class UpdateManager(private val context: Context) {
                     connectTimeout = 10000
                     readTimeout = 10000
                     requestMethod = "GET"
+                    useCaches = false
                     setRequestProperty("User-Agent", "NotchFlowMax-Android")
+                    setRequestProperty("Cache-Control", "no-cache")
+                    setRequestProperty("Pragma", "no-cache")
                 }
 
                 if (connection.responseCode == HttpURLConnection.HTTP_OK) {
@@ -61,14 +64,29 @@ class UpdateManager(private val context: Context) {
                             )
                         )
                     } else {
-                        _status.value = UpdateStatus.UpToDate
+                        _status.value = UpdateStatus.Idle
+                        if (isManualCheck) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "التطبيق محدث إلى آخر إصدار", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 } else {
-                    _status.value = UpdateStatus.Error("Server response: ${connection.responseCode}")
+                    _status.value = UpdateStatus.Idle
+                    if (isManualCheck) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "فشل الاتصال، تأكد من الإنترنت", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                _status.value = UpdateStatus.Error(e.localizedMessage ?: "Failed to check update")
+                _status.value = UpdateStatus.Idle
+                if (isManualCheck) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "فشل الاتصال، تأكد من الإنترنت", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

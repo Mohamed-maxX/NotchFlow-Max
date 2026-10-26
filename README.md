@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Mohamed-maxX/NotchFlow-Max/releases"><img src="https://img.shields.io/badge/Release-v1.1.0-2979FF?style=for-the-badge&logo=android" alt="Release v1.1.0" /></a>
+  <a href="https://github.com/Mohamed-maxX/NotchFlow-Max/releases"><img src="https://img.shields.io/badge/Release-v1.1.1-2979FF?style=for-the-badge&logo=android" alt="Release v1.1.1" /></a>
   <a href="https://developer.android.com/jetpack/compose"><img src="https://img.shields.io/badge/Jetpack_Compose-Material_3-00B0FF?style=for-the-badge&logo=jetpackcompose" alt="Jetpack Compose Material 3" /></a>
   <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.0.20-7928CA?style=for-the-badge&logo=kotlin" alt="Kotlin" /></a>
   <a href="https://raw.githubusercontent.com/Mohamed-maxX/NotchFlow-Max/main/version.json"><img src="https://img.shields.io/badge/OTA_Updates-Automated-2979FF?style=for-the-badge&logo=github" alt="Direct OTA Updates" /></a>

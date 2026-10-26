@@ -32,7 +32,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         observeConfig()
         observeUpdateStatus()
         refreshPermissions()
-        checkForUpdates(manual = false)
     }
 
     private fun observeConfig() {
@@ -175,10 +174,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { preferencesRepo.setAutoPauseLandscape(enabled) }
     }
 
-    fun checkForUpdates(manual: Boolean = true) {
-        viewModelScope.launch {
-            updateManager.checkForUpdates(manual = manual)
-        }
+    suspend fun checkForUpdates(isManualCheck: Boolean = true) {
+        updateManager.checkForUpdates(isManualCheck = isManualCheck)
     }
 
     fun downloadAndInstallUpdate(info: UpdateInfo) {

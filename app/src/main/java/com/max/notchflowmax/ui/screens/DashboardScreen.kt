@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +50,7 @@ import com.max.notchflowmax.ui.theme.TextPrimary
 import com.max.notchflowmax.ui.theme.TextSecondary
 import com.max.notchflowmax.ui.viewmodel.MainViewModel
 import com.max.notchflowmax.util.PermissionHelper
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +59,12 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var isChecking by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.checkForUpdates(isManualCheck = false)
+    }
 
     Scaffold(
         modifier = Modifier
@@ -78,24 +91,50 @@ fun DashboardScreen(
                 },
                 actions = {
                     OutlinedButton(
-                        onClick = { viewModel.checkForUpdates(manual = true) },
+                        onClick = {
+                            if (!isChecking) {
+                                coroutineScope.launch {
+                                    isChecking = true
+                                    try {
+                                        viewModel.checkForUpdates(isManualCheck = true)
+                                    } finally {
+                                        isChecking = false
+                                    }
+                                }
+                            }
+                        },
+                        enabled = !isChecking,
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = ElectricBlue
+                            contentColor = ElectricBlue,
+                            disabledContentColor = ElectricBlue.copy(alpha = 0.5f)
                         ),
                         modifier = Modifier.padding(end = 12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.CloudSync,
-                            contentDescription = "Check for Updates",
-                            tint = ElectricBlue,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "OTA Update",
-                            style = MaterialTheme.typography.labelSmall
-                        )
+                        if (isChecking) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(14.dp),
+                                color = ElectricBlue,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Checking...",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.CloudSync,
+                                contentDescription = "Check for Updates",
+                                tint = ElectricBlue,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "OTA Update",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
