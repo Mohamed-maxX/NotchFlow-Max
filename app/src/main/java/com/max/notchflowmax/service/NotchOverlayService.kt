@@ -28,16 +28,20 @@ class NotchOverlayService : Service() {
         const val NOTIFICATION_ID = 1001
 
         fun start(context: Context) {
-            val intent = Intent(context, NotchOverlayService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                val intent = Intent(context, NotchOverlayService::class.java)
                 context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
         fun stop(context: Context) {
-            context.stopService(Intent(context, NotchOverlayService::class.java))
+            try {
+                context.stopService(Intent(context, NotchOverlayService::class.java))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -50,7 +54,11 @@ class NotchOverlayService : Service() {
         preferencesRepo = PreferencesRepository(this)
 
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification())
+        try {
+            startForeground(NOTIFICATION_ID, buildNotification())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         // If accessibility service is not hosting, fallback to hosting in this service
         if (!NotchFlowAccessibilityService.isRunning && PermissionHelper.hasOverlayPermission(this)) {
@@ -85,18 +93,16 @@ class NotchOverlayService : Service() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "NotchFlow Max Service",
-                NotificationManager.IMPORTANCE_MIN
-            ).apply {
-                description = "Runs the camera notch touch detection engine"
-                setShowBadge(false)
-            }
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "NotchFlow Max Service",
+            NotificationManager.IMPORTANCE_MIN
+        ).apply {
+            description = "Runs the camera notch touch detection engine"
+            setShowBadge(false)
         }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager?.createNotificationChannel(channel)
     }
 
     private fun buildNotification(): Notification {

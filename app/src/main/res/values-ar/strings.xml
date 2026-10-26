@@ -72,7 +72,7 @@
     <string name="update_up_to_date">التطبيق محدّث إلى آخر إصدار.</string>
     <string name="update_download_install">تحميل وتثبيت</string>
     <string name="update_later">لاحقاً</string>
-    <string name="update_downloading">جاري تحميل التحديث (%1$d%%)...</string>
-    <string name="update_installing">جاري تجهيز التثبيت...</string>
+    <string name="update_downloading">جاري تحميل التحديث (%1$d%%)&#8230;</string>
+    <string name="update_installing">جاري تجهيز التثبيت&#8230;</string>
     <string name="update_failed">تعذر التحقق من التحديثات</string>
 </resources>

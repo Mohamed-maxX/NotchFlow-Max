@@ -46,11 +46,8 @@ class FlowCapsuleOverlay(
         val layoutParams = WindowManager.LayoutParams().apply {
             type = if (NotchFlowAccessibilityService.isRunning) {
                 WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             } else {
-                @Suppress("DEPRECATION")
-                WindowManager.LayoutParams.TYPE_PHONE
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             }
             flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or
@@ -93,7 +90,11 @@ class FlowCapsuleOverlay(
         handler.removeCallbacks(autoDismissRunnable)
         capsuleView?.let { view ->
             try {
-                windowManager.removeView(view)
+                if (view.isAttachedToWindow) {
+                    windowManager.removeViewImmediate(view)
+                } else {
+                    windowManager.removeView(view)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -183,7 +184,11 @@ class FlowCapsuleOverlay(
                     setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                         override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
                             if (fromUser) {
-                                audioManager?.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
+                                try {
+                                    audioManager?.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
                                 resetAutoDismiss()
                             }
                         }

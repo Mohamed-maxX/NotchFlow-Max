@@ -51,42 +51,82 @@ class NotchFlowAccessibilityService : AccessibilityService() {
     }
 
     fun takeScreenshot(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-        } else {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }
 
     fun lockScreen(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
-        } else {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }
 
     fun pullNotifications(): Boolean {
-        return performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS)
+        return try {
+            performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun openQuickSettings(): Boolean {
-        return performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS)
+        return try {
+            performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun openPowerMenu(): Boolean {
-        return performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)
+        return try {
+            performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun performHome(): Boolean {
-        return performGlobalAction(GLOBAL_ACTION_HOME)
+        return try {
+            performGlobalAction(GLOBAL_ACTION_HOME)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun performBack(): Boolean {
-        return performGlobalAction(GLOBAL_ACTION_BACK)
+        return try {
+            performGlobalAction(GLOBAL_ACTION_BACK)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun performRecents(): Boolean {
-        return performGlobalAction(GLOBAL_ACTION_RECENTS)
+        return try {
+            performGlobalAction(GLOBAL_ACTION_RECENTS)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }

@@ -37,39 +37,49 @@ object PermissionHelper {
     fun isAccessibilityServiceEnabled(context: Context): Boolean {
         if (NotchFlowAccessibilityService.isRunning) return true
 
-        val expectedComponent = ComponentName(context, NotchFlowAccessibilityService::class.java)
-        val expectedFull = expectedComponent.flattenToString()
-        val expectedShort = expectedComponent.flattenToShortString()
+        return try {
+            val expectedComponent = ComponentName(context, NotchFlowAccessibilityService::class.java)
+            val expectedFull = expectedComponent.flattenToString()
+            val expectedShort = expectedComponent.flattenToShortString()
 
-        // 1. AccessibilityManager
-        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
-        if (am != null) {
-            val enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
-            if (enabledServices.any {
-                val serviceInfo = it.resolveInfo.serviceInfo
-                serviceInfo.packageName == context.packageName &&
-                serviceInfo.name == NotchFlowAccessibilityService::class.java.name
-            }) {
-                return true
+            // 1. AccessibilityManager
+            val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
+            if (am != null) {
+                val enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+                if (enabledServices.any {
+                    val serviceInfo = it.resolveInfo?.serviceInfo
+                    serviceInfo != null &&
+                    serviceInfo.packageName == context.packageName &&
+                    serviceInfo.name == NotchFlowAccessibilityService::class.java.name
+                }) {
+                    return true
+                }
             }
-        }
 
-        // 2. Settings.Secure
-        val enabledSettings = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-        ) ?: return false
+            // 2. Settings.Secure
+            val enabledSettings = Settings.Secure.getString(
+                context.contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            ) ?: return false
 
-        return enabledSettings.split(':').any {
-            it.equals(expectedFull, ignoreCase = true) || it.equals(expectedShort, ignoreCase = true)
+            enabledSettings.split(':').any {
+                it.equals(expectedFull, ignoreCase = true) || it.equals(expectedShort, ignoreCase = true)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 
     fun openAccessibilitySettings(context: Context) {
-        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        try {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        context.startActivity(intent)
     }
 
     fun isBatteryOptimizationIgnored(context: Context): Boolean {

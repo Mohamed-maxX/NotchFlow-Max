@@ -72,7 +72,7 @@
     <string name="update_up_to_date">NotchFlow Max is up to date.</string>
     <string name="update_download_install">Download &amp; Install</string>
     <string name="update_later">Later</string>
-    <string name="update_downloading">Downloading update (%1$d%%)...</string>
-    <string name="update_installing">Preparing installer...</string>
+    <string name="update_downloading">Downloading update (%1$d%%)&#8230;</string>
+    <string name="update_installing">Preparing installer&#8230;</string>
     <string name="update_failed">Failed to check updates</string>
 </resources>

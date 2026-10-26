@@ -17,81 +17,89 @@ class ActionExecutor(private val context: Context) {
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
     fun execute(action: GestureAction, onTriggerFlowCapsule: (() -> Unit)? = null) {
-        when (action) {
-            GestureAction.NONE -> {}
-            GestureAction.TAKE_SCREENSHOT -> {
-                val accessibility = NotchFlowAccessibilityService.instance
-                if (accessibility != null) {
-                    accessibility.takeScreenshot()
-                } else {
-                    showAccessibilityToast()
+        try {
+            when (action) {
+                GestureAction.NONE -> {}
+                GestureAction.TAKE_SCREENSHOT -> {
+                    val accessibility = NotchFlowAccessibilityService.instance
+                    if (accessibility != null) {
+                        accessibility.takeScreenshot()
+                    } else {
+                        showAccessibilityToast()
+                    }
+                }
+                GestureAction.TOGGLE_FLASHLIGHT -> {
+                    FlashlightController.toggle(context)
+                }
+                GestureAction.LOCK_SCREEN -> {
+                    val accessibility = NotchFlowAccessibilityService.instance
+                    if (accessibility != null) {
+                        accessibility.lockScreen()
+                    } else {
+                        showAccessibilityToast()
+                    }
+                }
+                GestureAction.NOTIFICATIONS -> {
+                    val accessibility = NotchFlowAccessibilityService.instance
+                    if (accessibility != null) {
+                        accessibility.pullNotifications()
+                    } else {
+                        showAccessibilityToast()
+                    }
+                }
+                GestureAction.QUICK_SETTINGS -> {
+                    val accessibility = NotchFlowAccessibilityService.instance
+                    if (accessibility != null) {
+                        accessibility.openQuickSettings()
+                    } else {
+                        showAccessibilityToast()
+                    }
+                }
+                GestureAction.POWER_MENU -> {
+                    val accessibility = NotchFlowAccessibilityService.instance
+                    if (accessibility != null) {
+                        accessibility.openPowerMenu()
+                    } else {
+                        showAccessibilityToast()
+                    }
+                }
+                GestureAction.MEDIA_PLAY_PAUSE -> {
+                    dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+                }
+                GestureAction.MEDIA_NEXT -> {
+                    dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_NEXT)
+                }
+                GestureAction.MEDIA_PREVIOUS -> {
+                    dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+                }
+                GestureAction.RINGER_MODE_TOGGLE -> {
+                    toggleRingerMode()
+                }
+                GestureAction.FLOW_CAPSULE -> {
+                    onTriggerFlowCapsule?.invoke()
                 }
             }
-            GestureAction.TOGGLE_FLASHLIGHT -> {
-                FlashlightController.toggle(context)
-            }
-            GestureAction.LOCK_SCREEN -> {
-                val accessibility = NotchFlowAccessibilityService.instance
-                if (accessibility != null) {
-                    accessibility.lockScreen()
-                } else {
-                    showAccessibilityToast()
-                }
-            }
-            GestureAction.NOTIFICATIONS -> {
-                val accessibility = NotchFlowAccessibilityService.instance
-                if (accessibility != null) {
-                    accessibility.pullNotifications()
-                } else {
-                    showAccessibilityToast()
-                }
-            }
-            GestureAction.QUICK_SETTINGS -> {
-                val accessibility = NotchFlowAccessibilityService.instance
-                if (accessibility != null) {
-                    accessibility.openQuickSettings()
-                } else {
-                    showAccessibilityToast()
-                }
-            }
-            GestureAction.POWER_MENU -> {
-                val accessibility = NotchFlowAccessibilityService.instance
-                if (accessibility != null) {
-                    accessibility.openPowerMenu()
-                } else {
-                    showAccessibilityToast()
-                }
-            }
-            GestureAction.MEDIA_PLAY_PAUSE -> {
-                dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
-            }
-            GestureAction.MEDIA_NEXT -> {
-                dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_NEXT)
-            }
-            GestureAction.MEDIA_PREVIOUS -> {
-                dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
-            }
-            GestureAction.RINGER_MODE_TOGGLE -> {
-                toggleRingerMode()
-            }
-            GestureAction.FLOW_CAPSULE -> {
-                onTriggerFlowCapsule?.invoke()
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun dispatchMediaKey(keyCode: Int) {
-        val am = audioManager ?: return
-        val eventTime = SystemClock.uptimeMillis()
-        val downEvent = KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0)
-        val upEvent = KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, keyCode, 0)
-        am.dispatchMediaKeyEvent(downEvent)
-        am.dispatchMediaKeyEvent(upEvent)
+        try {
+            val am = audioManager ?: return
+            val eventTime = SystemClock.uptimeMillis()
+            val downEvent = KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0)
+            val upEvent = KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, keyCode, 0)
+            am.dispatchMediaKeyEvent(downEvent)
+            am.dispatchMediaKeyEvent(upEvent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun toggleRingerMode() {
-        val am = audioManager ?: return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        try {
+            val am = audioManager ?: return
             if (notificationManager?.isNotificationPolicyAccessGranted == false) {
                 // If DND policy not granted, toggle between Normal and Vibrate
                 when (am.ringerMode) {
@@ -100,20 +108,26 @@ class ActionExecutor(private val context: Context) {
                 }
                 return
             }
-        }
 
-        when (am.ringerMode) {
-            AudioManager.RINGER_MODE_NORMAL -> am.ringerMode = AudioManager.RINGER_MODE_VIBRATE
-            AudioManager.RINGER_MODE_VIBRATE -> am.ringerMode = AudioManager.RINGER_MODE_SILENT
-            else -> am.ringerMode = AudioManager.RINGER_MODE_NORMAL
+            when (am.ringerMode) {
+                AudioManager.RINGER_MODE_NORMAL -> am.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+                AudioManager.RINGER_MODE_VIBRATE -> am.ringerMode = AudioManager.RINGER_MODE_SILENT
+                else -> am.ringerMode = AudioManager.RINGER_MODE_NORMAL
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun showAccessibilityToast() {
-        Toast.makeText(
-            context,
-            "Enable NotchFlow Accessibility Service to use this action",
-            Toast.LENGTH_SHORT
-        ).show()
+        try {
+            Toast.makeText(
+                context,
+                "Enable NotchFlow Accessibility Service to use this action",
+                Toast.LENGTH_SHORT
+            ).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

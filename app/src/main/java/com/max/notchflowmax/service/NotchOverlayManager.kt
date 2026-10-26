@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.abs
 
+@SuppressLint("StaticFieldLeak")
 object NotchOverlayManager {
 
     private val _configFlow = MutableStateFlow(NotchConfig())
@@ -75,7 +76,11 @@ object NotchOverlayManager {
         if (fromContext != null && fromContext != activeContext) return
 
         removeOverlayView()
-        flowCapsule?.dismiss()
+        try {
+            flowCapsule?.dismiss()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         flowCapsule = null
         actionExecutor = null
         overlayView = null
@@ -195,11 +200,8 @@ object NotchOverlayManager {
     private fun buildLayoutParams(config: NotchConfig, density: Float): WindowManager.LayoutParams {
         val windowType = if (isAccessibilityHost) {
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
-            @Suppress("DEPRECATION")
-            WindowManager.LayoutParams.TYPE_PHONE
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }
 
         return WindowManager.LayoutParams().apply {
@@ -225,9 +227,10 @@ object NotchOverlayManager {
     private fun updateOverlayLayoutParams(config: NotchConfig) {
         val view = overlayView ?: return
         val wm = windowManager ?: return
-        val density = view.resources.displayMetrics.density
-        val params = buildLayoutParams(config, density)
         try {
+            if (!view.isAttachedToWindow) return
+            val density = view.resources.displayMetrics.density
+            val params = buildLayoutParams(config, density)
             wm.updateViewLayout(view, params)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -263,17 +266,21 @@ object NotchOverlayManager {
     }
 
     private fun triggerGesture(gesture: GestureType) {
-        val context = activeContext ?: return
-        val config = _configFlow.value
-        if (isLandscapePaused || !config.serviceEnabled) return
+        try {
+            val context = activeContext ?: return
+            val config = _configFlow.value
+            if (isLandscapePaused || !config.serviceEnabled) return
 
-        if (config.hapticFeedback) {
-            HapticHelper.performClickHaptic(context)
-        }
+            if (config.hapticFeedback) {
+                HapticHelper.performClickHaptic(context)
+            }
 
-        val action = config.gestures[gesture] ?: GestureAction.NONE
-        actionExecutor?.execute(action) {
-            flowCapsule?.show(config.posY, config.height)
+            val action = config.gestures[gesture] ?: GestureAction.NONE
+            actionExecutor?.execute(action) {
+                flowCapsule?.show(config.posY, config.height)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -281,10 +288,15 @@ object NotchOverlayManager {
         val view = overlayView ?: return
         val wm = windowManager ?: return
         try {
-            wm.removeView(view)
+            if (view.isAttachedToWindow) {
+                wm.removeViewImmediate(view)
+            } else {
+                wm.removeView(view)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
+        } finally {
+            overlayView = null
         }
-        overlayView = null
     }
 }

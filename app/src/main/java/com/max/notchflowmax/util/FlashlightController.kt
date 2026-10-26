@@ -35,14 +35,21 @@ object FlashlightController {
     }
 
     private fun getTorchCameraId(cameraManager: CameraManager): String? {
-        for (id in cameraManager.cameraIdList) {
-            val characteristics = cameraManager.getCameraCharacteristics(id)
-            val hasFlash = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
-            val facing = characteristics.get(CameraCharacteristics.LENS_FACING)
-            if (hasFlash && facing == CameraCharacteristics.LENS_FACING_BACK) {
-                return id
+        return try {
+            for (id in cameraManager.cameraIdList) {
+                try {
+                    val characteristics = cameraManager.getCameraCharacteristics(id)
+                    val hasFlash = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+                    val facing = characteristics.get(CameraCharacteristics.LENS_FACING)
+                    if (hasFlash && facing == CameraCharacteristics.LENS_FACING_BACK) {
+                        return id
+                    }
+                } catch (_: Exception) {}
             }
+            cameraManager.cameraIdList.firstOrNull()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        return cameraManager.cameraIdList.firstOrNull()
     }
 }

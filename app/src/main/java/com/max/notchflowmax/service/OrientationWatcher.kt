@@ -22,15 +22,23 @@ class OrientationWatcher(
     }
 
     fun start() {
-        val currentOrientation = context.resources.configuration.orientation
-        lastIsLandscape = (currentOrientation == Configuration.ORIENTATION_LANDSCAPE)
-        onOrientationChanged(lastIsLandscape)
-        if (orientationEventListener.canDetectOrientation()) {
-            orientationEventListener.enable()
+        try {
+            val currentOrientation = context.resources.configuration.orientation
+            lastIsLandscape = (currentOrientation == Configuration.ORIENTATION_LANDSCAPE)
+            onOrientationChanged(lastIsLandscape)
+            if (orientationEventListener.canDetectOrientation()) {
+                orientationEventListener.enable()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     fun stop() {
-        orientationEventListener.disable()
+        try {
+            orientationEventListener.disable()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
