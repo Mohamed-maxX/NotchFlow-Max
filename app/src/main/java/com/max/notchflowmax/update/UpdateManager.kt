@@ -3,7 +3,6 @@ package com.max.notchflowmax.update
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -23,7 +22,7 @@ import java.net.URL
 class UpdateManager(private val context: Context) {
 
     companion object {
-        const val VERSION_URL = "https://raw.githubusercontent.com/Mohamed-maxX/NotchFlow-Max/main/version.json"
+        const val RELEASES_API_URL = "https://api.github.com/repos/Mohamed-maxX/NotchFlow-Max/releases/latest"
     }
 
     private val _status = MutableStateFlow<UpdateStatus>(UpdateStatus.Idle)
@@ -32,33 +31,56 @@ class UpdateManager(private val context: Context) {
     suspend fun checkForUpdates(isManualCheck: Boolean = false) {
         withContext(Dispatchers.IO) {
             try {
-                val url = URL(VERSION_URL)
+                val url = URL(RELEASES_API_URL)
                 val connection = (url.openConnection() as HttpURLConnection).apply {
                     connectTimeout = 10000
                     readTimeout = 10000
                     requestMethod = "GET"
                     useCaches = false
                     setRequestProperty("User-Agent", "NotchFlowMax-Android")
+                    setRequestProperty("Accept", "application/vnd.github.v3+json")
                     setRequestProperty("Cache-Control", "no-cache")
                     setRequestProperty("Pragma", "no-cache")
                 }
 
-                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val responseCode = connection.responseCode
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
                     val response = connection.inputStream.bufferedReader().use { it.readText() }
                     val json = JSONObject(response)
 
-                    val remoteVersionCode = json.getInt("versionCode")
-                    val remoteVersionName = json.getString("versionName")
-                    val apkUrl = json.getString("apkUrl")
-                    val changelog = json.optString("changelog", "")
+                    val tagName = json.getString("tag_name")
+                    val cleanRemoteVersion = tagName.trim().removePrefix("v").removePrefix("V")
+                    val currentVersion = BuildConfig.VERSION_NAME
 
-                    val currentVersionCode = BuildConfig.VERSION_CODE
+                    // Extract body as changelog
+                    val changelog = json.optString("body", "").trim()
 
-                    if (remoteVersionCode > currentVersionCode) {
+                    // Extract direct APK browser_download_url from assets
+                    var apkUrl: String? = null
+                    val assets = json.optJSONArray("assets")
+                    if (assets != null) {
+                        for (i in 0 until assets.length()) {
+                            val asset = assets.getJSONObject(i)
+                            val name = asset.optString("name", "")
+                            if (name.endsWith(".apk", ignoreCase = true)) {
+                                apkUrl = asset.getString("browser_download_url")
+                                break
+                            }
+                        }
+                        if (apkUrl.isNullOrEmpty() && assets.length() > 0) {
+                            apkUrl = assets.getJSONObject(0).optString("browser_download_url", "")
+                        }
+                    }
+
+                    if (apkUrl.isNullOrEmpty()) {
+                        apkUrl = "https://github.com/Mohamed-maxX/NotchFlow-Max/releases/latest/download/NotchFlowMax.apk"
+                    }
+
+                    if (isNewerVersion(cleanRemoteVersion, currentVersion)) {
                         _status.value = UpdateStatus.UpdateAvailable(
                             UpdateInfo(
-                                versionCode = remoteVersionCode,
-                                versionName = remoteVersionName,
+                                versionName = cleanRemoteVersion,
                                 apkUrl = apkUrl,
                                 changelog = changelog
                             )
@@ -69,6 +91,13 @@ class UpdateManager(private val context: Context) {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "التطبيق محدث إلى آخر إصدار", Toast.LENGTH_SHORT).show()
                             }
+                        }
+                    }
+                } else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    _status.value = UpdateStatus.Idle
+                    if (isManualCheck) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "تعذر الفحص حالياً، حاول لاحقاً", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
@@ -91,6 +120,24 @@ class UpdateManager(private val context: Context) {
         }
     }
 
+    private fun isNewerVersion(remoteVersion: String, currentVersion: String): Boolean {
+        return try {
+            val remoteParts = remoteVersion.trim().removePrefix("v").removePrefix("V").split(".").mapNotNull { it.toIntOrNull() }
+            val currentParts = currentVersion.trim().removePrefix("v").removePrefix("V").split(".").mapNotNull { it.toIntOrNull() }
+
+            val maxLen = maxOf(remoteParts.size, currentParts.size)
+            for (i in 0 until maxLen) {
+                val r = remoteParts.getOrElse(i) { 0 }
+                val c = currentParts.getOrElse(i) { 0 }
+                if (r > c) return true
+                if (r < c) return false
+            }
+            false
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     suspend fun downloadAndInstall(info: UpdateInfo) {
         _status.value = UpdateStatus.Downloading(0)
         withContext(Dispatchers.IO) {
@@ -101,12 +148,26 @@ class UpdateManager(private val context: Context) {
                     apkFile.delete()
                 }
 
-                val url = URL(info.apkUrl)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
+                var currentUrl = info.apkUrl
+                var connection = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
                     connectTimeout = 15000
                     readTimeout = 30000
                     instanceFollowRedirects = true
                     setRequestProperty("User-Agent", "NotchFlowMax-Android")
+                }
+
+                var redirects = 0
+                while (connection.responseCode in 300..399 && redirects < 5) {
+                    val location = connection.getHeaderField("Location") ?: break
+                    connection.disconnect()
+                    currentUrl = location
+                    connection = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
+                        connectTimeout = 15000
+                        readTimeout = 30000
+                        instanceFollowRedirects = true
+                        setRequestProperty("User-Agent", "NotchFlowMax-Android")
+                    }
+                    redirects++
                 }
 
                 val fileLength = connection.contentLength
@@ -133,6 +194,7 @@ class UpdateManager(private val context: Context) {
                 output.flush()
                 output.close()
                 input.close()
+                connection.disconnect()
 
                 _status.value = UpdateStatus.ReadyToInstall(apkFile)
                 withContext(Dispatchers.Main) {

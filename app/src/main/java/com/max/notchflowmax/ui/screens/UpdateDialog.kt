@@ -76,13 +76,18 @@ fun UpdateDialog(
                             color = TextPrimary
                         )
                         Spacer(modifier = Modifier.height(4.dp))
+                        val displayVersion = if (info.versionName.startsWith("v", ignoreCase = true)) {
+                            info.versionName
+                        } else {
+                            "v${info.versionName}"
+                        }
                         Box(
                             modifier = Modifier
                                 .background(ElectricBlue.copy(alpha = 0.18f), RoundedCornerShape(6.dp))
                                 .padding(horizontal = 10.dp, vertical = 3.dp)
                         ) {
                             Text(
-                                text = "v${info.versionName} (Build ${info.versionCode})",
+                                text = if (info.versionCode > 0) "$displayVersion (Build ${info.versionCode})" else displayVersion,
                                 style = MaterialTheme.typography.labelSmall,
                                 color = ElectricBlue
                             )
