@@ -141,60 +141,88 @@ class UpdateManager(private val context: Context) {
     suspend fun downloadAndInstall(info: UpdateInfo) {
         _status.value = UpdateStatus.Downloading(0)
         withContext(Dispatchers.IO) {
+            var targetFile: File? = null
             try {
+                // 1. Sanitize file name strictly against Path Traversal (CWE-22)
+                val sanitizedVersion = info.versionName.replace(Regex("[^a-zA-Z0-9._-]"), "_")
                 val destinationDir = File(context.cacheDir, "updates").apply { mkdirs() }
-                val apkFile = File(destinationDir, "NotchFlowMax_${info.versionName}.apk")
+                val apkFile = File(destinationDir, "NotchFlowMax_$sanitizedVersion.apk")
+                targetFile = apkFile
                 if (apkFile.exists()) {
                     apkFile.delete()
                 }
 
+                // 2. Validate URL protocol - enforce HTTPS strictly
                 var currentUrl = info.apkUrl
+                if (!currentUrl.startsWith("https://", ignoreCase = true)) {
+                    throw SecurityException("Insecure HTTP protocol rejected!")
+                }
+
                 var connection = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
                     connectTimeout = 15000
                     readTimeout = 30000
-                    instanceFollowRedirects = true
+                    instanceFollowRedirects = false
                     setRequestProperty("User-Agent", "NotchFlowMax-Android")
                 }
 
+                // Handle secure redirects up to 5 hops
                 var redirects = 0
                 while (connection.responseCode in 300..399 && redirects < 5) {
                     val location = connection.getHeaderField("Location") ?: break
+                    if (!location.startsWith("https://", ignoreCase = true)) {
+                        throw SecurityException("Insecure redirect to cleartext HTTP rejected!")
+                    }
                     connection.disconnect()
                     currentUrl = location
                     connection = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
                         connectTimeout = 15000
                         readTimeout = 30000
-                        instanceFollowRedirects = true
+                        instanceFollowRedirects = false
                         setRequestProperty("User-Agent", "NotchFlowMax-Android")
                     }
                     redirects++
                 }
 
-                val fileLength = connection.contentLength
-                val input = BufferedInputStream(connection.inputStream)
-                val output = FileOutputStream(apkFile)
-
-                val data = ByteArray(8192)
-                var total: Long = 0
-                var count: Int
-                var lastReportedPercent = 0
-
-                while (input.read(data).also { count = it } != -1) {
-                    total += count
-                    output.write(data, 0, count)
-                    if (fileLength > 0) {
-                        val percent = ((total * 100) / fileLength).toInt()
-                        if (percent != lastReportedPercent) {
-                            lastReportedPercent = percent
-                            _status.value = UpdateStatus.Downloading(percent)
-                        }
-                    }
+                if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                    throw IllegalStateException("Server returned HTTP ${connection.responseCode}")
                 }
 
-                output.flush()
-                output.close()
-                input.close()
+                val fileLength = connection.contentLength
+                connection.inputStream.use { input ->
+                    FileOutputStream(apkFile).use { output ->
+                        val bufferedInput = BufferedInputStream(input)
+                        val data = ByteArray(8192)
+                        var total: Long = 0
+                        var count: Int
+                        var lastReportedPercent = 0
+
+                        while (bufferedInput.read(data).also { count = it } != -1) {
+                            total += count
+                            output.write(data, 0, count)
+                            if (fileLength > 0) {
+                                val percent = ((total * 100) / fileLength).toInt().coerceIn(0, 100)
+                                if (percent != lastReportedPercent) {
+                                    lastReportedPercent = percent
+                                    _status.value = UpdateStatus.Downloading(percent)
+                                }
+                            }
+                        }
+                        output.flush()
+                    }
+                }
                 connection.disconnect()
+
+                // 3. Verify downloaded package archive integrity & package name match
+                val archiveInfo = context.packageManager.getPackageArchiveInfo(apkFile.absolutePath, 0)
+                if (archiveInfo == null) {
+                    apkFile.delete()
+                    throw SecurityException("Downloaded file is not a valid Android APK archive")
+                }
+
+                if (archiveInfo.packageName != context.packageName) {
+                    apkFile.delete()
+                    throw SecurityException("Security violation: Package name mismatch (${archiveInfo.packageName})")
+                }
 
                 _status.value = UpdateStatus.ReadyToInstall(apkFile)
                 withContext(Dispatchers.Main) {
@@ -202,7 +230,8 @@ class UpdateManager(private val context: Context) {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                _status.value = UpdateStatus.Error("Download failed: ${e.localizedMessage}")
+                targetFile?.let { if (it.exists()) it.delete() }
+                _status.value = UpdateStatus.Error("فشل التحديث: ${e.localizedMessage ?: "Unknown error"}")
             }
         }
     }

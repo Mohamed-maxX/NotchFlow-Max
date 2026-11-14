@@ -2,10 +2,12 @@ package com.max.notchflowmax.service
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -17,6 +19,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import com.max.notchflowmax.data.GestureAction
 import com.max.notchflowmax.util.HapticHelper
 
@@ -237,6 +240,14 @@ class FlowCapsuleOverlay(
                                             Settings.System.SCREEN_BRIGHTNESS,
                                             progress
                                         )
+                                    } else {
+                                        Toast.makeText(context, "Grant Write Settings permission to adjust brightness", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                                            data = Uri.parse("package:${context.packageName}")
+                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        }
+                                        context.startActivity(intent)
+                                        dismiss()
                                     }
                                 } catch (_: Exception) {}
                                 resetAutoDismiss()

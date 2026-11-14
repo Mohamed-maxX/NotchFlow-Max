@@ -3,22 +3,65 @@ package com.max.notchflowmax.util
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.os.Handler
+import android.os.Looper
 
 object FlashlightController {
 
+    @Volatile
     private var isTorchOn: Boolean = false
+    private var isCallbackRegistered: Boolean = false
+    private var registeredCameraManager: CameraManager? = null
+
+    private val torchCallback = object : CameraManager.TorchCallback() {
+        override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+            super.onTorchModeChanged(cameraId, enabled)
+            isTorchOn = enabled
+        }
+
+        override fun onTorchModeUnavailable(cameraId: String) {
+            super.onTorchModeUnavailable(cameraId)
+            isTorchOn = false
+        }
+    }
+
+    fun register(context: Context) {
+        if (isCallbackRegistered) return
+        try {
+            val cameraManager = context.applicationContext.getSystemService(Context.CAMERA_SERVICE) as? CameraManager ?: return
+            cameraManager.registerTorchCallback(torchCallback, Handler(Looper.getMainLooper()))
+            registeredCameraManager = cameraManager
+            isCallbackRegistered = true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun unregister() {
+        if (!isCallbackRegistered) return
+        try {
+            registeredCameraManager?.unregisterTorchCallback(torchCallback)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            registeredCameraManager = null
+            isCallbackRegistered = false
+        }
+    }
 
     fun toggle(context: Context): Boolean {
+        register(context)
         val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as? CameraManager ?: return false
-        try {
+        return try {
             val cameraId = getTorchCameraId(cameraManager) ?: return false
-            isTorchOn = !isTorchOn
-            cameraManager.setTorchMode(cameraId, isTorchOn)
-            return isTorchOn
+            val targetState = !isTorchOn
+            cameraManager.setTorchMode(cameraId, targetState)
+            isTorchOn = targetState
+            targetState
         } catch (e: Exception) {
             e.printStackTrace()
             isTorchOn = false
-            return false
+            false
         }
     }
 

@@ -1,8 +1,10 @@
 package com.max.notchflowmax.service
 
 import android.accessibilityservice.AccessibilityService
+import android.content.res.Configuration
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
+import com.max.notchflowmax.util.FlashlightController
 
 class NotchFlowAccessibilityService : AccessibilityService() {
 
@@ -15,35 +17,47 @@ class NotchFlowAccessibilityService : AccessibilityService() {
             get() = instance != null
     }
 
-    private var orientationWatcher: OrientationWatcher? = null
-
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
 
         // Attach overlay directly inside AccessibilityService using TYPE_ACCESSIBILITY_OVERLAY
-        // This allows the overlay to draw directly over the camera notch cutout and top status bar!
         NotchOverlayManager.attach(this, isAccessibility = true)
 
-        orientationWatcher = OrientationWatcher(this) { isLandscape ->
-            val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
-            NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
-        }
-        orientationWatcher?.start()
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
+        NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
+
+        FlashlightController.register(this)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
+        NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Window tracking if needed
+        // No heavy window event processing needed
     }
 
     override fun onInterrupt() {
         // Interrupt handling
     }
 
+    override fun onUnbind(intent: android.content.Intent?): Boolean {
+        cleanup()
+        return super.onUnbind(intent)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        orientationWatcher?.stop()
-        orientationWatcher = null
+        cleanup()
+    }
+
+    private fun cleanup() {
+        FlashlightController.unregister()
         NotchOverlayManager.detach(this)
         if (instance == this) {
             instance = null

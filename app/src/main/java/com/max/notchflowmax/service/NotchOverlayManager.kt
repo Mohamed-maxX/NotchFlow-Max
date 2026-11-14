@@ -23,15 +23,28 @@ import kotlin.math.abs
 @SuppressLint("StaticFieldLeak")
 object NotchOverlayManager {
 
+    // Hard-Capped Safety Bounds preventing Screen Lockout / Touch Hijacking
+    const val MAX_SAFE_WIDTH_DP = 160
+    const val MIN_SAFE_WIDTH_DP = 20
+    const val MAX_SAFE_HEIGHT_DP = 55
+    const val MIN_SAFE_HEIGHT_DP = 20
+    const val MAX_SAFE_Y_DP = 60
+    const val MAX_SAFE_X_DP = 180
+
     private val _configFlow = MutableStateFlow(NotchConfig())
     val configFlow: StateFlow<NotchConfig> = _configFlow.asStateFlow()
 
+    @Volatile
     private var activeContext: Context? = null
+    @Volatile
     private var windowManager: WindowManager? = null
+    @Volatile
     private var isAccessibilityHost: Boolean = false
+    @Volatile
     private var overlayView: View? = null
     private var actionExecutor: ActionExecutor? = null
     private var flowCapsule: FlowCapsuleOverlay? = null
+    @Volatile
     private var isLandscapePaused: Boolean = false
 
     val isAttached: Boolean
@@ -44,11 +57,13 @@ object NotchOverlayManager {
         _configFlow.value = config
     }
 
+    @Synchronized
     fun updateConfigLive(config: NotchConfig) {
         _configFlow.value = config
         applyCurrentConfigToOverlay()
     }
 
+    @Synchronized
     fun attach(context: Context, isAccessibility: Boolean) {
         // If already attached via Accessibility, do not downgrade to standard application overlay
         if (isAccessibilityHost && !isAccessibility && overlayView != null) {
@@ -72,6 +87,7 @@ object NotchOverlayManager {
         }
     }
 
+    @Synchronized
     fun detach(fromContext: Context? = null) {
         if (fromContext != null && fromContext != activeContext) return
 
@@ -89,6 +105,7 @@ object NotchOverlayManager {
         isAccessibilityHost = false
     }
 
+    @Synchronized
     fun setLandscapePaused(paused: Boolean) {
         if (isLandscapePaused != paused) {
             isLandscapePaused = paused
@@ -96,6 +113,7 @@ object NotchOverlayManager {
         }
     }
 
+    @Synchronized
     private fun applyCurrentConfigToOverlay() {
         val context = activeContext ?: return
         val config = _configFlow.value
@@ -125,25 +143,35 @@ object NotchOverlayManager {
             override fun onDown(e: MotionEvent): Boolean = true
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                triggerGesture(GestureType.SINGLE_TAP)
-                return true
+                val action = _configFlow.value.gestures[GestureType.SINGLE_TAP] ?: GestureAction.NONE
+                if (action != GestureAction.NONE) {
+                    triggerGesture(GestureType.SINGLE_TAP)
+                    return true
+                }
+                return false
             }
 
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                triggerGesture(GestureType.DOUBLE_TAP)
-                return true
+                val action = _configFlow.value.gestures[GestureType.DOUBLE_TAP] ?: GestureAction.NONE
+                if (action != GestureAction.NONE) {
+                    triggerGesture(GestureType.DOUBLE_TAP)
+                    return true
+                }
+                return false
             }
 
             override fun onLongPress(e: MotionEvent) {
-                triggerGesture(GestureType.LONG_PRESS)
+                val action = _configFlow.value.gestures[GestureType.LONG_PRESS] ?: GestureAction.NONE
+                if (action != GestureAction.NONE) {
+                    triggerGesture(GestureType.LONG_PRESS)
+                }
             }
         })
 
-        // Custom touch listener with 40px delta threshold for instant responsive swipes on the notch
         var downX = 0f
         var downY = 0f
         var isSwipeTriggered = false
-        val swipeThreshold = 40f * density
+        val swipeThreshold = 35f * density
 
         view.setOnTouchListener { _, event ->
             when (event.actionMasked) {
@@ -204,6 +232,12 @@ object NotchOverlayManager {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }
 
+        // Clamp dimensions to safe bounds preventing screen lockout
+        val safeWidth = config.width.coerceIn(MIN_SAFE_WIDTH_DP, MAX_SAFE_WIDTH_DP)
+        val safeHeight = config.height.coerceIn(MIN_SAFE_HEIGHT_DP, MAX_SAFE_HEIGHT_DP)
+        val safeY = config.posY.coerceIn(0, MAX_SAFE_Y_DP)
+        val safeX = config.posX.coerceIn(-MAX_SAFE_X_DP, MAX_SAFE_X_DP)
+
         return WindowManager.LayoutParams().apply {
             type = windowType
             flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -217,10 +251,10 @@ object NotchOverlayManager {
 
             format = PixelFormat.TRANSLUCENT
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-            x = (config.posX * density).toInt()
-            y = (config.posY * density).toInt()
-            width = (config.width * density).toInt()
-            height = (config.height * density).toInt()
+            x = (safeX * density).toInt()
+            y = (safeY * density).toInt()
+            width = (safeWidth * density).toInt()
+            height = (safeHeight * density).toInt()
         }
     }
 
@@ -271,11 +305,13 @@ object NotchOverlayManager {
             val config = _configFlow.value
             if (isLandscapePaused || !config.serviceEnabled) return
 
+            val action = config.gestures[gesture] ?: GestureAction.NONE
+            if (action == GestureAction.NONE) return
+
             if (config.hapticFeedback) {
                 HapticHelper.performClickHaptic(context)
             }
 
-            val action = config.gestures[gesture] ?: GestureAction.NONE
             actionExecutor?.execute(action) {
                 flowCapsule?.show(config.posY, config.height)
             }

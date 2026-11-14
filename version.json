@@ -1,6 +1,6 @@
 {
-  "versionCode": 3,
-  "versionName": "1.1.1",
+  "versionCode": 4,
+  "versionName": "1.2.0",
   "apkUrl": "https://github.com/Mohamed-maxX/NotchFlow-Max/releases/latest/download/NotchFlowMax.apk",
-  "changelog": "الإصدار 1.1.1: تحسين نظام التحديث ليعمل في صمت عند فتح التطبيق، وإضافة حالة التحميل لزر OTA."
+  "changelog": "الإصدار 1.2.0: ترقية أمنية شاملة وتحصين ضد شلل الشاشة، فحص توقيع APK التلقائي، تقييد مسارات FileProvider، وإلغاء استنزاف المستشعرات والبطارية."
 }

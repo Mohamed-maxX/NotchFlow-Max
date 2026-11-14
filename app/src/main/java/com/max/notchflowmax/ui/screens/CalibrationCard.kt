@@ -145,7 +145,7 @@ fun CalibrationCard(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Calibration Sliders
+            // Calibration Sliders (Safely constrained to prevent touch dead-zones)
             SliderWithLabel(
                 label = stringResource(id = R.string.pos_x_label),
                 value = config.posX,
@@ -156,28 +156,28 @@ fun CalibrationCard(
             SliderWithLabel(
                 label = stringResource(id = R.string.pos_y_label),
                 value = config.posY,
-                range = 0f..100f,
+                range = 0f..60f,
                 onValueChange = onYChange
             )
 
             SliderWithLabel(
                 label = stringResource(id = R.string.size_width_label),
                 value = config.width,
-                range = 30f..250f,
+                range = 20f..160f,
                 onValueChange = onWidthChange
             )
 
             SliderWithLabel(
                 label = stringResource(id = R.string.size_height_label),
                 value = config.height,
-                range = 30f..140f,
+                range = 20f..55f,
                 onValueChange = onHeightChange
             )
 
             SliderWithLabel(
                 label = stringResource(id = R.string.corner_radius_label),
                 value = config.cornerRadius,
-                range = 0f..60f,
+                range = 0f..50f,
                 onValueChange = onCornerRadiusChange
             )
 

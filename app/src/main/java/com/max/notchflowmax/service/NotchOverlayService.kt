@@ -7,12 +7,13 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.content.res.Configuration
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.max.notchflowmax.MainActivity
 import com.max.notchflowmax.R
 import com.max.notchflowmax.data.PreferencesRepository
+import com.max.notchflowmax.util.FlashlightController
 import com.max.notchflowmax.util.PermissionHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,6 @@ class NotchOverlayService : Service() {
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private lateinit var preferencesRepo: PreferencesRepository
-    private var orientationWatcher: OrientationWatcher? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -65,13 +65,19 @@ class NotchOverlayService : Service() {
             NotchOverlayManager.attach(this, isAccessibility = false)
         }
 
-        orientationWatcher = OrientationWatcher(this) { isLandscape ->
-            val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
-            NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
-        }
-        orientationWatcher?.start()
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
+        NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
 
+        FlashlightController.register(this)
         observeConfig()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val autoPause = NotchOverlayManager.configFlow.value.autoPauseLandscape
+        NotchOverlayManager.setLandscapePaused(isLandscape && autoPause)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -128,8 +134,7 @@ class NotchOverlayService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        orientationWatcher?.stop()
-        orientationWatcher = null
+        FlashlightController.unregister()
         if (!NotchFlowAccessibilityService.isRunning) {
             NotchOverlayManager.detach(this)
         }
